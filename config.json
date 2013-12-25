@@ -1,0 +1,1 @@
+{"name":"monocle","aws":{"Bucket":"SomeBucket"},"capture":{"threshold":0.006,"name":"capture.jpg","prev_name":"prev_capture.jpg"},"last":{"count":40,"name":"040.jpg"}}
