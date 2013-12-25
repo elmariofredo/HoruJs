@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HoruJs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+  <body>
+    
+
+    <div class="container">
+
+    <img id="monitor" src="" data-adaptive-background="1" cross-origin="anonymous"><br>
+    <span id="monitor_label"></span>
+
+    </div> <!-- /container -->
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="js/jquery.adaptive-backgrounds.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+
+      var s3_path = 'https://s3.amazonaws.com/SomeBucketName/monocle/';
+
+      var load_data = function () {
+        console.log('Loading data');
+        $.ajax({
+          url: s3_path+'load.js',
+          dataType: 'script',
+          complete: function () {
+            console.log('done');
+            $('#monitor').attr('src', s3_path+data.last.name);
+            $('#monitor_label').text(data.last.updated_at);
+
+            // follow https://github.com/briangonzalez/jquery.adaptive-backgrounds.js#caveats
+            $.adaptiveBackground.run({parent: 'body'});
+            
+            setTimeout(load_data, 3000);
+          }
+        });
+      }
+
+      load_data();
+
+    </script>
+  </body>
+</html>

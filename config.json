@@ -1,1 +1,1 @@
-{"name":"monocle","aws":{"Bucket":"SomeBucket"},"capture":{"threshold":0.006,"name":"capture.jpg","prev_name":"prev_capture.jpg"},"last":{"count":40,"name":"040.jpg"}}
+{"name":"monocle","viewer_script":"load.js","aws":{"Bucket":"SomeBucketName"},"capture":{"threshold":0.003,"name":"capture.jpg","prev_name":"prev_capture.jpg"},"last":{"count":1,"name":"001.jpg"}}

@@ -1,9 +1,9 @@
 
 
-// brew install graphicsmagick
-// export AWS_ACCESS_KEY_ID="bla"
-// export AWS_SECRET_ACCESS_KEY="bla"
-// forever client.js
+// # brew install graphicsmagick
+// # export AWS_ACCESS_KEY_ID="bla"
+// # export AWS_SECRET_ACCESS_KEY="bla"
+// # forever client.js
 
 // {
 // 	"name":"monocle",
@@ -60,9 +60,10 @@ var pad = function (str, max) {
 
 // console.log(config)
 
-config.last.count = config.last.count+1;
-config.last.name = pad(config.last.count, 3)+'.jpg';
-
+var init = function () {
+	config.last.count = config.last.count+1;
+	config.last.name = pad(config.last.count, 3)+'.jpg';
+}
 
 var update_config = function (config_data) {
 	
@@ -71,21 +72,34 @@ var update_config = function (config_data) {
 	fs.writeFile(config_path, config_string, function(err) {
 		if(err) {
 		  console.log(err);
-		} else {
-		  s3.client.putObject({
-		    Bucket: config.aws.Bucket,
-		    Key: config.name+'/'+config_filename,
-		    Body: config_string,
-		    ACL:'public-read'
-		  }, function (res) {
-		    // console.log('Successfully uploaded config file.');
-		  });
 		}
+	});
+
+	// Push json config file to amazon
+	s3.client.putObject({
+		Bucket: config.aws.Bucket,
+		Key: config.name+'/'+config_filename,
+		Body: config_string,
+		ACL:'public-read'
+	}, function (res) {
+		// console.log('Successfully uploaded config file.');
+	});
+
+	// Push javascript viewer script file to amazon
+	s3.client.putObject({
+		Bucket: config.aws.Bucket,
+		Key: config.name+'/'+config.viewer_script,
+		Body: 'var data='+config_string+';',
+		ACL:'public-read'
+	}, function (res) {
+		// console.log('Successfully uploaded viewer script file. '+config.name+'/'+config.viewer_script);
 	});
 }
 
-var backup_file_for_comparison = function () {
-	fs.createReadStream(config.capture.name).pipe(fs.createWriteStream(config.capture.prev_name));
+var backup_file_for_comparison = function (callback) {
+	var save_stream = fs.createWriteStream(config.capture.prev_name)
+	fs.createReadStream(config.capture.name).pipe(save_stream);
+	save_stream.on('close', callback);
 }
 
 var snap = function () {
@@ -99,14 +113,18 @@ var snap = function () {
 
 		// resemble(config.capture.name).compareTo(config.capture.prev_name).onComplete(function(data){
 		gm.compare(config.capture.name, config.capture.prev_name, function (err, isEqual, equality, raw) {
-		  if (err) throw err;
+		  // if (err) throw err;
 
 		  // console.log('Actual equality: %d', equality);
 
 		  if ( equality > config.capture.threshold ) {
 
+		  	init();
+
+		  	config.last.updated_at = String(new Date());
+
 			  fs.readFile(config.capture.name, function (err, data) {
-				  if (err) { throw err; }
+				  // if (err) { throw err; }
 
 				  s3.client.putObject({
 				    Bucket: config.aws.Bucket,
@@ -116,15 +134,20 @@ var snap = function () {
 				  }, function (res) {
 				    
 				    console.log('Successfully uploaded file '+ config.last.name);
-				    update_config(config);
-				    backup_file_for_comparison();
 
+				    update_config(config);
+
+				    backup_file_for_comparison(function(){
+				    	snap();
+				    });
+				    
 				  });
 
 				});
 
 		  } else {
-		  	console.log('Images are equal... skipping.')
+		  	console.log('Images are equal... skipping.');
+		  	snap();
 		  }
 
 		});
