@@ -1,5 +1,5 @@
 {
-  "name": "horuJs",
+  "name": "HoruJs",
   "version": "0.0.0",
   "description": "Node.js Webcam Streaming",
   "main": "client.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:elmariofredo/horuJs.git"
+    "url": "git@github.com:elmariofredo/HoruJs.git"
   },
   "keywords": [
     "webcam",
@@ -17,7 +17,7 @@
   "author": "ElMarioFredo",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/elmariofredo/horuJs/issues"
+    "url": "https://github.com/elmariofredo/HoruJs/issues"
   },
-  "homepage": "https://github.com/elmariofredo/horuJs"
+  "homepage": "https://github.com/elmariofredo/HoruJs"
 }
